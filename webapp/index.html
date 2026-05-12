@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Белая Рука</title>
+    <link rel="stylesheet" href="./styles.css?v=16" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body class="app-shell">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <span class="topbar-mark" aria-hidden="true">💧</span>
+        <div class="topbar-brand">Белая Рука</div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="screen">
+
+      <!-- ═══════════ HOME ═══════════ -->
+      <section id="tab-home" class="tab tab-pane-home active">
+        <header class="tab-hero tab-hero--water">
+          <span class="tab-hero-emoji" aria-hidden="true">💧</span>
+          <h2 class="tab-hero-title">Каталог</h2>
+          <p class="tab-hero-sub">Вода и доставка в два касания</p>
+        </header>
+        <div class="section-head">
+          <h3 class="section-label">Товары</h3>
+          <span id="catalog-count" class="muted">0 товаров</span>
+        </div>
+
+        <div id="catalog" class="catalog-grid"></div>
+        <div id="catalog-empty" class="empty-state">
+          Каталог пока пустой.<br />Добавьте товары в разделе «Админ».
+        </div>
+      </section>
+
+      <!-- ═══════════ B2B ═══════════ -->
+      <section id="tab-b2b" class="tab tab-pane-b2b">
+        <header class="tab-hero tab-hero--biz">
+          <span class="tab-hero-emoji" aria-hidden="true">💼</span>
+          <h2 class="tab-hero-title">Для бизнеса</h2>
+          <p class="tab-hero-sub">Оптовые поставки и партнёрство</p>
+        </header>
+        
+        <div id="b2b-form-wrap">
+          <div class="card-section">
+            <h3>Информация о компании</h3>
+            
+            <label>Название компании *</label>
+            <input id="b2b-company" type="text" placeholder="ООО Пример" required />
+
+            <label>ИНН</label>
+            <input id="b2b-inn" type="text" placeholder="7700000000" />
+          </div>
+
+          <div class="card-section">
+            <h3>Точки доставки</h3>
+            
+            <label>Количество точек</label>
+            <input id="b2b-points-count" type="number" min="1" placeholder="5" />
+
+            <label>Адреса точек</label>
+            <textarea id="b2b-points-addresses" placeholder="Укажите адреса через точку с запятой&#10;Пример: Москва, ул. Ленина 1; Москва, пр-т Мира 10" rows="4"></textarea>
+
+            <label>Объём поставок</label>
+            <input id="b2b-volume" type="text" placeholder="200 бутылей в неделю" />
+          </div>
+
+          <div class="card-section">
+            <h3>Контактная информация</h3>
+            
+            <label>Контакт для связи *</label>
+            <input id="b2b-contact" type="text" placeholder="Телефон или Telegram" required />
+
+            <label>Комментарий</label>
+            <textarea id="b2b-comment" placeholder="Дополнительная информация" rows="3"></textarea>
+          </div>
+
+          <button id="send-b2b" class="btn primary btn--biz">Отправить заявку</button>
+
+          <div class="banner banner--biz">
+            <strong>💡 Партнёрская программа</strong><br>
+            Организуйте мини-склад в вашем ЖК и зарабатывайте на розничной продаже. Мы привозим оптом, вы продаёте соседям.
+          </div>
+        </div>
+
+        <!-- success state (hidden until sent) -->
+        <div id="b2b-success" class="b2b-success hidden">
+          <div class="success-icon" aria-hidden="true">✅</div>
+          <div class="success-title">Заявка отправлена!</div>
+          <div class="success-sub">Наш менеджер свяжется с вами в ближайшее время для обсуждения условий сотрудничества.</div>
+          <button id="b2b-again" class="btn ghost">Отправить ещё одну заявку</button>
+        </div>
+
+      </section>
+
+      <!-- ═══════════ PROFILE ═══════════ -->
+      <section id="tab-profile" class="tab tab-pane-profile">
+        <header class="tab-hero tab-hero--person">
+          <span class="tab-hero-emoji" aria-hidden="true">👤</span>
+          <h2 class="tab-hero-title">Профиль</h2>
+          <p class="tab-hero-sub">Данные, адреса и бонусы</p>
+        </header>
+
+        <!-- progress -->
+        <div class="progress-card">
+          <div class="progress-head">
+            <div>
+              <div class="muted">Заказано</div>
+              <div id="liters-total" class="big-number">0 бут.</div>
+            </div>
+            <div class="progress-meta">
+              <div class="muted">До подарка</div>
+              <div id="liters-left" class="strong">50 бут.</div>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+          <div class="muted small">Каждые 50 бутылей — одна бесплатно</div>
+        </div>
+
+        <!-- personal data -->
+        <div class="card-section">
+          <div class="card-section-head">
+            <h3>Личные данные</h3>
+            <button id="edit-profile-toggle" class="link-btn">Изменить</button>
+          </div>
+
+          <div id="profile-view">
+            <div class="data-row"><span class="data-label">Имя</span><span id="view-name" class="data-value">—</span></div>
+            <div class="data-row"><span class="data-label">Телефон</span><span id="view-phone" class="data-value">—</span></div>
+            <div class="data-row"><span class="data-label">Адрес</span><span id="view-address" class="data-value">—</span></div>
+            <div class="data-row"><span class="data-label">Этаж / Домофон</span><span id="view-floor-intercom" class="data-value">—</span></div>
+            <div class="data-row"><span class="data-label">Заметки</span><span id="view-notes" class="data-value">—</span></div>
+          </div>
+
+          <div id="profile-form" class="hidden">
+            <label>Имя</label>
+            <input id="profile-name" type="text" />
+            <label>Телефон</label>
+            <input id="profile-phone" type="tel" />
+            <label>Основной адрес</label>
+            <input id="profile-main-address" type="text" />
+            <div class="row-2">
+              <div>
+                <label>Этаж</label>
+                <input id="profile-floor" type="text" />
+              </div>
+              <div>
+                <label>Домофон</label>
+                <input id="profile-intercom" type="text" />
+              </div>
+            </div>
+            <label>Заметки для курьера</label>
+            <textarea id="profile-notes"></textarea>
+            <div class="row-2">
+              <button id="cancel-profile" class="btn ghost">Отмена</button>
+              <button id="save-profile" class="btn primary">Сохранить</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- extra addresses -->
+        <div class="card-section">
+          <h3>Дополнительные адреса</h3>
+          <div id="address-list"></div>
+          <div class="row-2" style="margin-top:10px">
+            <input id="address-label" type="text" placeholder="Название (Дом, Дача…)" />
+            <input id="address-value" type="text" placeholder="Адрес" />
+          </div>
+          <button id="add-address" class="btn ghost">+ Добавить адрес</button>
+        </div>
+
+        <!-- admin -->
+        <div class="card-section admin-section">
+          <h3 class="admin-heading">
+            <span class="admin-heading-emoji" aria-hidden="true">⚙️</span> 
+            Управление каталогом
+          </h3>
+          <p class="muted" style="margin-bottom: 16px;">Раздел для администратора. Добавленные товары появятся в каталоге для всех пользователей.</p>
+
+          <div id="admin-product-list"></div>
+
+          <details class="admin-add-details">
+            <summary>➕ Добавить новый товар</summary>
+            <div class="admin-add-form">
+              <div class="card-section" style="margin-top: 12px; background: #fff;">
+                <h4 style="margin: 0 0 16px; font-size: 16px; font-weight: 600;">Основная информация</h4>
+                
+                <label>Название товара *</label>
+                <input id="admin-title" type="text" placeholder="Например: Вода питьевая 19л" required />
+
+                <label>Описание</label>
+                <textarea id="admin-description" placeholder="Краткое описание товара" rows="3"></textarea>
+
+                <div class="row-2">
+                  <div>
+                    <label>Цена (₽) *</label>
+                    <input id="admin-price" type="number" min="0" placeholder="250" required />
+                  </div>
+                  <div>
+                    <label>Минимум (шт)</label>
+                    <input id="admin-min-volume" type="number" min="1" value="3" />
+                  </div>
+                </div>
+
+                <label>Габариты</label>
+                <input id="admin-size" type="text" placeholder="19л, 30×30×50 см" />
+              </div>
+
+              <div class="card-section" style="background: #fff;">
+                <h4 style="margin: 0 0 16px; font-size: 16px; font-weight: 600;">Фото товара</h4>
+                
+                <label>URL фотографии</label>
+                <input id="admin-photo" type="url" placeholder="https://example.com/photo.jpg" />
+
+                <label>или загрузить с устройства</label>
+                <input id="admin-photo-file" type="file" accept="image/*" style="padding: 8px; border: 2px dashed var(--separator); background: var(--page-bg);" />
+              </div>
+
+              <button id="save-product" class="btn admin-btn btn--person">Сохранить товар</button>
+            </div>
+          </details>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- ═══════════ ORDER MODAL ═══════════ -->
+    <div id="order-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-card">
+        <div class="modal-head">
+          <div id="modal-title" class="modal-title">Заказ</div>
+          <button id="modal-close" class="icon-btn" type="button">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="qty-row">
+            <button id="qty-minus" class="qty-btn" type="button">−</button>
+            <div class="qty-box"><span id="qty-value">3</span> шт</div>
+            <button id="qty-plus" class="qty-btn" type="button">+</button>
+          </div>
+          <label>Комментарий</label>
+          <textarea id="order-comment" placeholder="Пожелания по доставке"></textarea>
+
+          <label>Дата доставки</label>
+          <div class="calendar-widget">
+            <div class="cal-nav">
+              <button type="button" id="cal-prev" class="cal-nav-btn" aria-label="Предыдущий месяц">◀</button>
+              <div id="cal-month-label" class="cal-month-label">Май 2026</div>
+              <button type="button" id="cal-next" class="cal-nav-btn" aria-label="Следующий месяц">▶</button>
+            </div>
+            <div class="cal-weekdays" aria-hidden="true">
+              <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+            </div>
+            <div id="cal-grid" class="cal-grid"></div>
+          </div>
+          <p class="time-disclaimer">
+            Время доставки ориентировочное и может быть скорректировано при подтверждении заказа.
+          </p>
+
+          <label>Интервал времени</label>
+          <div class="time-slots" id="time-slots">
+            <button class="time-slot" data-time="09:00–12:00">09–12</button>
+            <button class="time-slot" data-time="12:00–15:00">12–15</button>
+            <button class="time-slot" data-time="15:00–18:00">15–18</button>
+            <button class="time-slot" data-time="18:00–21:00">18–21</button>
+          </div>
+          <input id="order-time-custom" type="text" placeholder="Свой интервал, например 17:00–20:00" />
+
+          <button id="modal-submit" class="btn primary">Оформить заказ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ BOTTOM NAV ═══════════ -->
+    <nav class="bottom-nav">
+      <button type="button" data-tab="b2b" class="nav-btn nav-btn--biz" aria-label="Бизнес">
+        <span class="nav-icon nav-icon-lg" aria-hidden="true">💼</span>
+        <span class="nav-label">Бизнес</span>
+      </button>
+      <button type="button" data-tab="home" class="nav-center nav-center--water" aria-label="Каталог">
+        <span class="nav-center-circle">
+          <span class="nav-center-emoji" aria-hidden="true">💧</span>
+        </span>
+      </button>
+      <button type="button" data-tab="profile" class="nav-btn nav-btn--person" aria-label="Профиль">
+        <span class="nav-icon nav-icon-lg" aria-hidden="true">👤</span>
+        <span class="nav-label">Профиль</span>
+      </button>
+    </nav>
+
+    <script src="./script.js?v=16"></script>
+  </body>
+</html>
