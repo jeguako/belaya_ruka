@@ -180,9 +180,14 @@ def upload_catalog_via_ftp_if_configured() -> None:
     host = os.getenv("FTP_HOST", "").strip()
     user = os.getenv("FTP_USER", "").strip()
     password = os.getenv("FTP_PASSWORD", "").strip()
-    remote_dir = os.getenv("FTP_REMOTE_DIR", "").strip().rstrip("/")
-    if not remote_dir:
-        remote_dir = "/public_html"
+    remote_raw = os.getenv("FTP_REMOTE_DIR", "").strip()
+    rp = remote_raw.rstrip("/")
+    if not remote_raw:
+        rp = "/public_html"
+    elif rp.lower() in (".", "-", "cwd", "~"):
+        rp = ""
+
+    path = ("catalog.json" if not rp else f"{rp}/catalog.json").replace("//", "/")
     if not (host and user and password):
         return
     if not CATALOG_FILE.exists():
@@ -196,8 +201,10 @@ def upload_catalog_via_ftp_if_configured() -> None:
         tls_mode = "yes"
     else:
         tls_mode = ""
-    path = f"{remote_dir}/catalog.json".replace("//", "/")
-    url = f"ftp://{host}/{path.lstrip('/')}"
+    if path.startswith("/"):
+        url = f"ftp://{host}//{path.lstrip('/')}"
+    else:
+        url = f"ftp://{host}/{path}"
     cmd = [
         "curl",
         "-sS",
