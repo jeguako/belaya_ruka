@@ -1,55 +1,41 @@
-# Инструкция по заливке в GitHub репозиторий codeer
+# Заливка в GitHub: jeguako/belaya_ruka
 
-Код уже подготовлен и закоммичен локально. Осталось создать репозиторий на GitHub и запушить.
+Репозиторий: **https://github.com/jeguako/belaya_ruka**
 
-## Вариант 1: Через веб-интерфейс GitHub (проще всего)
+Локальная папка проекта: `/Users/temirkanseudzen/assistant-telegram-bot`
 
-1. Откройте https://github.com/new
-2. Заполните форму:
-   - Repository name: **codeer**
-   - Description: Telegram bot для доставки воды с мини-приложением
-   - Visibility: выберите Public или Private
-   - **НЕ** добавляйте README, .gitignore или license (они уже есть в проекте)
-3. Нажмите "Create repository"
-4. GitHub покажет инструкции. Используйте раздел "push an existing repository":
+## Remote (уже настроено)
 
 ```bash
 cd /Users/temirkanseudzen/assistant-telegram-bot
-git remote set-url origin https://github.com/temirkanseudzen/codeer.git
+git remote -v
+# origin → https://github.com/jeguako/belaya_ruka.git
+```
+
+## Push с вашей машины
+
+```bash
+cd /Users/temirkanseudzen/assistant-telegram-bot
 git push -u origin main
 ```
 
-5. При запросе логина/пароля используйте:
-   - Username: ваш GitHub username (temirkanseudzen)
-   - Password: **Personal Access Token** (не обычный пароль!)
+Учётная запись должна иметь доступ к **jeguako/belaya_ruka** (логин `jeguako` + Personal Access Token с правом `repo`, или SSH-ключ, добавленный в аккаунт `jeguako`).
 
-### Как создать Personal Access Token:
-1. Перейдите: https://github.com/settings/tokens
-2. Нажмите "Generate new token" → "Generate new token (classic)"
-3. Дайте название (например "codeer-bot")
-4. Выберите scope: **repo** (полный доступ к репозиториям)
-5. Нажмите "Generate token"
-6. **Скопируйте токен** (он показывается только один раз!)
-7. Используйте этот токен вместо пароля при push
+### Personal Access Token (HTTPS)
 
-## Вариант 2: Через GitHub Desktop (если установлен)
+1. Войдите на GitHub как **jeguako**: https://github.com/settings/tokens  
+2. Generate new token (classic), scope **repo**.  
+3. При `git push` в качестве пароля вставьте токен.
 
-1. Откройте GitHub Desktop
-2. File → Add Local Repository
-3. Выберите `/Users/temirkanseudzen/assistant-telegram-bot`
-4. Нажмите "Publish repository"
-5. Назовите: **codeer**
-6. Выберите Public/Private
-7. Нажмите "Publish"
+### SSH
 
-## Текущее состояние
+```bash
+git remote set-url origin git@github.com:jeguako/belaya_ruka.git
+git push -u origin main
+```
 
-✅ Git репозиторий инициализирован
-✅ Все файлы закоммичены (commit hash: 7521577)
-✅ Remote настроен на: git@github.com:temirkanseudzen/codeer.git
-⏳ Нужно создать репозиторий на GitHub и запушить
+Нужен SSH-ключ, добавленный в профиль **jeguako**.
 
-## После успешного push
+## Важно
 
-Репозиторий будет доступен по адресу:
-https://github.com/temirkanseudzen/codeer
+- Файл `.env` в репозиторий **не попадает** (см. `.gitignore`). Секреты только локально на сервере.
