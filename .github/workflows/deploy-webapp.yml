@@ -23,7 +23,7 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./webapp/
-          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}/
           protocol: ${{ secrets.FTP_TLS || 'ftp' }}
           dangerous-clean-slate: false
           state-name: .ftp-deploy-sync-state.json
