@@ -5,9 +5,6 @@ on:
     branches:
       - main
       - claude/telegram-miniapp-redesign-*
-    paths:
-      - 'webapp/**'
-      - '.github/workflows/deploy-webapp.yml'
 
 jobs:
   deploy:
