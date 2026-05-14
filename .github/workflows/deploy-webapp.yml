@@ -1,0 +1,36 @@
+name: Deploy Webapp to FTP
+
+on:
+  push:
+    branches:
+      - main
+      - claude/telegram-miniapp-redesign-*
+    paths:
+      - 'webapp/**'
+      - '.github/workflows/deploy-webapp.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Upload webapp files to FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./webapp/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          protocol: ${{ secrets.FTP_TLS || 'ftp' }}
+          dangerous-clean-slate: false
+          state-name: .ftp-deploy-sync-state.json
+
+      - name: Notify deployment
+        if: always()
+        run: |
+          echo "✅ Webapp deployed to FTP"
+          echo "Host: ${{ secrets.FTP_HOST }}"
+          echo "Dir: ${{ secrets.FTP_REMOTE_DIR }}"
